@@ -9,6 +9,9 @@ WORKDIR /app
 # INSTALA OS REQUISITOS
 RUN pip install -r requirements.txt
 
+# ENTRYPOINT DE TESTE
+ENTRYPOINT ["sh", "./test.sh"]
+
 # RODA O MODULO PRINCIPAL
 CMD [ "python", "./main.py" ]
 

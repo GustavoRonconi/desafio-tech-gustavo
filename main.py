@@ -3,9 +3,9 @@ import pandas as pd
 from datetime import datetime, timedelta
 import numpy
 
-# Configuração do debbuger
-ptvsd.enable_attach(address=('0.0.0.0', 5678), redirect_output=True)
-ptvsd.wait_for_attach()
+# Configuração do debbuger VSCODE
+# ptvsd.enable_attach(address=('0.0.0.0', 5678), redirect_output=True)
+# ptvsd.wait_for_attach()
 
 
 class CSVInvalido(Exception):
@@ -105,7 +105,7 @@ class FundoInvestimento():
             raise PeriodoInvalido('Periodo invalido')
 
         aux_intervalo_cota = self.serie_dados_fundo.iloc[valor_cota_inicial.index.values.max(
-        ) - 1:valor_cota_final.index.values.max()]
+        ) - 1:valor_cota_final.index.values.max() + 1]
         aux_intervalo_cota_numeric_dict = pd.to_numeric(
             aux_intervalo_cota['cota']).to_dict()
         list_variacao_retorno = []
@@ -129,6 +129,19 @@ class FundoInvestimento():
             data_inicio_str, data_fim_str), key=lambda k: k['valor'])[0])
         return menor_retorno_diario
 
+    def serie_retorno_acumado(self, data_inicio_str, data_fim_str):
+        serie_dados_retorno_diario = self._retorno_diario(
+            data_inicio_str, data_fim_str)
+        serie_acumulada_retorno = []
+        for index, row in enumerate(serie_dados_retorno_diario):
+            if index == 0:
+                serie_acumulada_retorno.append(
+                    {'data': row['data'], 'valor': row['valor'], 'valor_formatado': row['valor_formatado']})
+            else:
+                valor_acumado = serie_acumulada_retorno[index-1]['valor'] + row['valor']
+                serie_acumulada_retorno.append(
+                    {'data': row['data'], 'valor': valor_acumado, 'valor_formatado': self._formatador_simples(valor_acumado)})
+        return {'descricao': 'serie_retorno_acumado', 'serie': serie_acumulada_retorno}
 
 """Cria uma nova instancia do fundo Zarathustra"""
 fundo_zarathustra = FundoInvestimento(
@@ -140,3 +153,4 @@ print(fundo_zarathustra.rentabilidade_relativa_cdi('2019-01-02', '2019-01-31'))
 print(fundo_zarathustra.evolucao_patrimonio('2019-01-02', '2019-01-31'))
 print(fundo_zarathustra.maior_retorno_diario('2019-01-02', '2019-01-31'))
 print(fundo_zarathustra.menor_retorno_diario('2019-01-02', '2019-01-31'))
+print(fundo_zarathustra.serie_retorno_acumado('2019-01-02', '2019-01-31'))
