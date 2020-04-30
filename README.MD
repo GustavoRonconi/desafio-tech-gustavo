@@ -1,4 +1,4 @@
-# Desafio TECH GS
+# Aplicação de Pandas!
 
 Projeto simples, de demonstração de conhecimento
 
